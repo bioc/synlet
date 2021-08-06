@@ -1,10 +1,9 @@
 Package: synlet
 Type: Package
 Title: Hits Selection for Synthetic Lethal RNAi Screen Data
-Version: 1.23.0
-Date: 2015-07-31
-Author: Chunxuan Shao <c.shao@dkfz.de>
-Maintainer: Chunxuan Shao <c.shao@dkfz.de>
+Version: 1.23.1
+Author: Chunxuan Shao <c.shao@dkfz-heidelberg.de>
+Maintainer: Chunxuan Shao <c.shao@dkfz-heidelberg.de>
 Description: Select hits from synthetic lethal RNAi screen data. For
         example, there are two identical celllines except one gene is
         knocked-down in one cellline. The interest is to find genes
@@ -20,6 +19,6 @@ biocViews: ImmunoOncology, CellBasedAssays, QualityControl, Preprocessing,
         Visualization, FeatureExtraction
 Depends: R (>= 3.2.0), ggplot2
 Imports: doBy, dplyr, grid, magrittr, RColorBrewer, RankProd, reshape2
-Suggests: knitr, testthat
+Suggests: knitr, testthat, rmarkdown
 VignetteBuilder: knitr
 NeedsCompilation: no
