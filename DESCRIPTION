@@ -1,7 +1,7 @@
 Package: synlet
 Type: Package
 Title: Hits Selection for Synthetic Lethal RNAi Screen Data
-Version: 1.25.0
+Version: 1.26.0
 Author: Chunxuan Shao <c.shao@dkfz-heidelberg.de>
 Maintainer: Chunxuan Shao <c.shao@dkfz-heidelberg.de>
 Description: Select hits from synthetic lethal RNAi screen data. For
