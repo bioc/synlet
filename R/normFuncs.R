@@ -1,27 +1,33 @@
-#' @import magrittr
-#' @import ggplot2
-#' @importFrom dplyr filter
-#' @importFrom reshape2 dcast
-#' @importFrom doBy summaryBy
 #' @keywords internal
-.ff_plateNorm <- function(masterPlate, dat) {
-  # browser()
-  masterp.da <- dplyr::filter(dat, MASTER_PLATE == masterPlate, 
-    EXPERIMENT_TYPE == "sample", WELL_CONTENT_NAME != "empty")
-  masterp.da$PLATE <- as.character(masterp.da$PLATE)
-  tem.1 <- doBy::summaryBy(READOUT ~ PLATE, data = masterp.da, 
-    FUN = median, na.rm = TRUE)
-  colnames(tem.1)[2] <- "PLATE_MED"
-  masterp.da.1 <- merge(masterp.da, tem.1, by.x = "PLATE", by.y = "PLATE")
-  tem.2 <- masterp.da.1$READOUT / masterp.da.1$PLATE_MED
-  masterp.da.1 <- data.frame(masterp.da.1, NORMEDV = tem.2)
-  # masterp.da.1
+# .ff_plateNorm <- function(masterPlate, dat) {
+#   # browser()
+#   masterp.da <- dplyr::filter(dat, MASTER_PLATE == masterPlate,
+#     EXPERIMENT_TYPE == "sample", WELL_CONTENT_NAME != "empty")
+#   masterp.da$PLATE <- as.character(masterp.da$PLATE)
+#   tem.1 <- doBy::summaryBy(READOUT ~ PLATE, data = masterp.da,
+#     FUN = median, na.rm = TRUE)
+#   colnames(tem.1)[2] <- "PLATE_MED"
+#   masterp.da.1 <- merge(masterp.da, tem.1, by.x = "PLATE", by.y = "PLATE")
+#   tem.2 <- masterp.da.1$READOUT / masterp.da.1$PLATE_MED
+#   masterp.da.1 <- data.frame(masterp.da.1, NORMEDV = tem.2)
+#   # masterp.da.1
+# }
+
+.ff_plateNorm <- function(masterPlate, dta) {
+  masterp_dta <- dta[MASTER_PLATE == masterPlate & EXPERIMENT_TYPE == "sample" & WELL_CONTENT_NAME != "empty"]
+
+  masterp_med <- masterp_dta[, .(PLATE_MED = median(READOUT, na.rm = TRUE)), by = "PLATE"] %>%
+    merge(masterp_dta, ., by.x = "PLATE", by.y = "PLATE") %>%
+    .[, NORMEDV := READOUT / PLATE_MED]
+
+  return(masterp_med)
 }
+
 
 #' @keywords internal
 .ff_contsiRNANorm <- function(masterPlate, dat, contsiRNA) {
   # browser()
-  masterp.da <- dplyr::filter(dat, MASTER_PLATE == masterPlate, 
+  masterp.da <- dplyr::filter(dat, MASTER_PLATE == masterPlate,
     EXPERIMENT_TYPE == "sample", WELL_CONTENT_NAME != "empty")
   control.da <- dplyr::filter(dat, MASTER_PLATE == masterPlate,
     WELL_CONTENT_NAME == contsiRNA)
@@ -40,8 +46,7 @@
 }
 
 #' @keywords internal
-.ff_masterPlateValue <- function(masterPlate, dat, treatment,
-  control, normMethod = "PLATE") {
+.ff_masterPlateValue <- function(masterPlate, dat, treatment, control, normMethod = "PLATE") {
   if (normMethod == "PLATE") {
     masterp.da.1 <- .ff_plateNorm(masterPlate, dat)
   } else {
@@ -72,11 +77,7 @@
     # master.norm
 
   } else {
-    stop("--- Empty control or treament plates in master plate:", 
+    stop("--- Empty control or treament plates in master plate:",
       masterPlate, "---\n")
   }
 }
-
-
-
-
