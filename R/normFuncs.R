@@ -13,37 +13,49 @@
 #   # masterp.da.1
 # }
 
+#' @keywords internal
 .ff_plateNorm <- function(masterPlate, dta) {
   masterp_dta <- dta[MASTER_PLATE == masterPlate & EXPERIMENT_TYPE == "sample" & WELL_CONTENT_NAME != "empty"]
 
-  masterp_med <- masterp_dta[, .(PLATE_MED = median(READOUT, na.rm = TRUE)), by = "PLATE"] %>%
+  masterp_norm <- masterp_dta[, .(PLATE_MED = median(READOUT, na.rm = TRUE)), by = "PLATE"] %>%
     merge(masterp_dta, ., by.x = "PLATE", by.y = "PLATE") %>%
     .[, NORMEDV := READOUT / PLATE_MED]
 
-  return(masterp_med)
+  return(masterp_norm)
 }
-
 
 #' @keywords internal
-.ff_contsiRNANorm <- function(masterPlate, dat, contsiRNA) {
-  # browser()
-  masterp.da <- dplyr::filter(dat, MASTER_PLATE == masterPlate,
-    EXPERIMENT_TYPE == "sample", WELL_CONTENT_NAME != "empty")
-  control.da <- dplyr::filter(dat, MASTER_PLATE == masterPlate,
-    WELL_CONTENT_NAME == contsiRNA)
+.ff_contsiRNANorm <- function(masterPlate, dta, contsiRNA) {
+  masterp_dta <- dta[MASTER_PLATE == masterPlate & EXPERIMENT_TYPE == "sample" & WELL_CONTENT_NAME != "empty"]
+  cont_dta    <- dta[MASTER_PLATE == masterPlate & WELL_CONTENT_NAME == contsiRNA]
 
-  masterp.da$PLATE <- as.character(masterp.da$PLATE)
-  control.da$PLATE <- as.character(control.da$PLATE)
-  tem.1 <- doBy::summaryBy(READOUT ~ PLATE, data = control.da, FUN = median, na.rm = TRUE)
-  # if (! all(complete.cases(tem.1))) browser()
-  colnames(tem.1)[2] <- "CONTROL_MED"
-  ## contain all masterplate data, even in the condition no control available.
-  masterp.da.1 <- merge(masterp.da, tem.1, by.x = "PLATE", by.y = "PLATE", all.x = TRUE)
-  ## normalize to the median.
-  tem.2 <- masterp.da.1$READOUT / masterp.da.1$CONTROL_MED
-  masterp.da.1 <- cbind(masterp.da.1, NORMEDV = tem.2)
-  # masterp.da.1
+  masterp_norm <- cont_dta[, .(CONTROL_MED = median(READOUT, na.rm = TRUE)), by = "PLATE"] %>%
+    merge(masterp_dta, ., by.x = "PLATE", by.y = "PLATE", all.x = TRUE) %>%
+    .[, NORMEDV := READOUT / CONTROL_MED]
+
+  return(masterp_norm)
 }
+
+# #' @keywords internal
+# .ff_contsiRNANorm <- function(masterPlate, dat, contsiRNA) {
+#   # browser()
+#   masterp.da <- dplyr::filter(dat, MASTER_PLATE == masterPlate,
+#     EXPERIMENT_TYPE == "sample", WELL_CONTENT_NAME != "empty")
+#   control.da <- dplyr::filter(dat, MASTER_PLATE == masterPlate,
+#     WELL_CONTENT_NAME == contsiRNA)
+
+#   masterp.da$PLATE <- as.character(masterp.da$PLATE)
+#   control.da$PLATE <- as.character(control.da$PLATE)
+#   tem.1 <- doBy::summaryBy(READOUT ~ PLATE, data = control.da, FUN = median, na.rm = TRUE)
+#   # if (! all(complete.cases(tem.1))) browser()
+#   colnames(tem.1)[2] <- "CONTROL_MED"
+#   ## contain all masterplate data, even in the condition no control available.
+#   masterp.da.1 <- merge(masterp.da, tem.1, by.x = "PLATE", by.y = "PLATE", all.x = TRUE)
+#   ## normalize to the median.
+#   tem.2 <- masterp.da.1$READOUT / masterp.da.1$CONTROL_MED
+#   masterp.da.1 <- cbind(masterp.da.1, NORMEDV = tem.2)
+#   # masterp.da.1
+# }
 
 #' @keywords internal
 .ff_masterPlateValue <- function(masterPlate, dat, treatment, control, normMethod = "PLATE") {
