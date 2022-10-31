@@ -58,38 +58,65 @@
 # }
 
 #' @keywords internal
-.ff_masterPlateValue <- function(masterPlate, dat, treatment, control, normMethod = "PLATE") {
+#- normMethod is either "PLATE", or contron siRNA names. Former is prefered.
+.ff_masterPlateValue <- function(masterPlate, dta, treatment, control, normMethod = "PLATE") {
   if (normMethod == "PLATE") {
-    masterp.da.1 <- .ff_plateNorm(masterPlate, dat)
+    masterp_dta <- .ff_plateNorm(masterPlate, dta)
   } else {
-    masterp.da.1 <- .ff_contsiRNANorm(masterPlate, dat, normMethod)
+    masterp_dta <- .ff_contsiRNANorm(masterPlate, dta, normMethod)
   }
 
-  treat.p <- dplyr::filter(masterp.da.1, EXPERIMENT_MODIFICATION == treatment) %>%
-    extract2("PLATE") %>%
-    as.character %>%
-    unique
+  treat_p <- masterp_dta[EXPERIMENT_MODIFICATION == treatment, unique(PLATE)]
+  cont_p  <- masterp_dta[EXPERIMENT_MODIFICATION == control, unique(PLATE)]
 
-  cont.p <- dplyr::filter(masterp.da.1, EXPERIMENT_MODIFICATION == control) %>%
-    extract2("PLATE") %>%
-    as.character %>%
-    unique
-
-  # browser()
-  if (length(treat.p) != 0 & length(cont.p) != 0) {
+  if (length(treat_p) != 0 & length(cont_p) != 0) {
     ## treatment first, followed by controls;
-    plate.paired <- c(treat.p, cont.p)
-    masterp.da.2 <- reshape2::dcast(masterp.da.1, WELL_CONTENT_NAME ~ PLATE,
-      value.var = "NORMEDV")
-    rownames(masterp.da.2) <- masterp.da.2$WELL_CONTENT_NAME
-    masterp.da.2 <- as.data.frame(masterp.da.2[, -1])
-    masterp.da.2 <- masterp.da.2[, plate.paired]
-    master.norm <- list(normedV = masterp.da.2, treat.num = length(treat.p),
-      cont.num = length(cont.p))
-    # master.norm
+    plate_paired <- c(treat_p, cont_p)
+    masterp_dta_w <- dcast(masterp_dta, WELL_CONTENT_NAME ~ PLATE, value.var = "NORMEDV") %>%
+      as.data.frame %>%
+      set_rownames(.$WELL_CONTENT_NAME) %>%
+      inset("WELL_CONTENT_NAME", value = NULL) %>%
+      extract(, plate_paired)
 
+    master_norm <- list(normedV = masterp_dta_w, treat_plate_num = length(treat_p), cont_plate_num = length(cont_p))
   } else {
-    stop("--- Empty control or treament plates in master plate:",
-      masterPlate, "---\n")
+    stop("(EE) Empty control or treament plates in master plate:", masterPlate, "\n")
   }
 }
+
+# #' @keywords internal
+# .ff_masterPlateValue <- function(masterPlate, dat, treatment, control, normMethod = "PLATE") {
+#   if (normMethod == "PLATE") {
+#     masterp.da.1 <- .ff_plateNorm(masterPlate, dat)
+#   } else {
+#     masterp.da.1 <- .ff_contsiRNANorm(masterPlate, dat, normMethod)
+#   }
+
+#   treat.p <- dplyr::filter(masterp.da.1, EXPERIMENT_MODIFICATION == treatment) %>%
+#     extract2("PLATE") %>%
+#     as.character %>%
+#     unique
+
+#   cont.p <- dplyr::filter(masterp.da.1, EXPERIMENT_MODIFICATION == control) %>%
+#     extract2("PLATE") %>%
+#     as.character %>%
+#     unique
+
+#   # browser()
+#   if (length(treat.p) != 0 & length(cont.p) != 0) {
+#     ## treatment first, followed by controls;
+#     plate.paired <- c(treat.p, cont.p)
+#     masterp.da.2 <- reshape2::dcast(masterp.da.1, WELL_CONTENT_NAME ~ PLATE,
+#       value.var = "NORMEDV")
+#     rownames(masterp.da.2) <- masterp.da.2$WELL_CONTENT_NAME
+#     masterp.da.2 <- as.data.frame(masterp.da.2[, -1])
+#     masterp.da.2 <- masterp.da.2[, plate.paired]
+#     master.norm <- list(normedV = masterp.da.2, treat.num = length(treat.p),
+#       cont.num = length(cont.p))
+#     # master.norm
+
+#   } else {
+#     stop("--- Empty control or treament plates in master plate:",
+#       masterPlate, "---\n")
+#   }
+# }
