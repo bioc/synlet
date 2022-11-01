@@ -18,7 +18,7 @@
   masterp_dta <- dta[MASTER_PLATE == masterPlate & EXPERIMENT_TYPE == "sample" & WELL_CONTENT_NAME != "empty"]
 
   masterp_norm <- masterp_dta[, .(PLATE_MED = median(READOUT, na.rm = TRUE)), by = "PLATE"] %>%
-    merge(masterp_dta, ., by.x = "PLATE", by.y = "PLATE") %>%
+    merge(masterp_dta, ., by.x = "PLATE", by.y = "PLATE", all.x = TRUE) %>%
     .[, NORMEDV := READOUT / PLATE_MED]
 
   return(masterp_norm)
@@ -32,6 +32,23 @@
   masterp_norm <- cont_dta[, .(CONTROL_MED = median(READOUT, na.rm = TRUE)), by = "PLATE"] %>%
     merge(masterp_dta, ., by.x = "PLATE", by.y = "PLATE", all.x = TRUE) %>%
     .[, NORMEDV := READOUT / CONTROL_MED]
+
+  return(masterp_norm)
+}
+
+#- norm_method is either "PLATE" or siRNA to be used (e.g., "lipid only" in WELL_CONTENT_NAME)
+.ff_norm <- function(masterPlate, dta, norm_method = "PLATE") {
+  masterp_dta <- dta[MASTER_PLATE == masterPlate & EXPERIMENT_TYPE == "sample" & WELL_CONTENT_NAME != "empty"]
+
+  if (norm_method == "PLATE") {
+    norm_dta <- masterp_dta[, .(BACKGROUND_MED = median(READOUT, na.rm = TRUE)), by = "PLATE"]
+  } else {
+    norm_dta <- dta[MASTER_PLATE == masterPlate & WELL_CONTENT_NAME == norm_method] %>%
+      .[, .(BACKGROUND_MED = median(READOUT, na.rm = TRUE)), by = "PLATE"]
+  }
+
+  masterp_norm <- merge(masterp_dta, norm_dta, by.x = "PLATE", by.y = "PLATE", all.x = TRUE) %>%
+    .[, NORMEDV := READOUT / BACKGROUND_MED]
 
   return(masterp_norm)
 }
@@ -60,11 +77,13 @@
 #' @keywords internal
 #- normMethod is either "PLATE", or contron siRNA names. Former is prefered.
 .ff_masterPlateValue <- function(masterPlate, dta, treatment, control, normMethod = "PLATE") {
-  if (normMethod == "PLATE") {
-    masterp_dta <- .ff_plateNorm(masterPlate, dta)
-  } else {
-    masterp_dta <- .ff_contsiRNANorm(masterPlate, dta, normMethod)
-  }
+  # if (normMethod == "PLATE") {
+  #   masterp_dta <- .ff_plateNorm(masterPlate, dta)
+  # } else {
+  #   masterp_dta <- .ff_contsiRNANorm(masterPlate, dta, normMethod)
+  # }
+
+  masterp_dta <- .ff_norm(masterPlate, dta, normMethod)
 
   treat_p <- masterp_dta[EXPERIMENT_MODIFICATION == treatment, unique(PLATE)]
   cont_p  <- masterp_dta[EXPERIMENT_MODIFICATION == control, unique(PLATE)]
