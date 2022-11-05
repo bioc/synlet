@@ -1,4 +1,5 @@
 #- norm_method is either "PLATE" or siRNA to be used (e.g., "lipid only" in WELL_CONTENT_NAME)
+#' @keywords internal
 .ff_norm <- function(masterPlate, dta, norm_method = "PLATE") {
   masterp_dta <- dta[MASTER_PLATE == masterPlate & EXPERIMENT_TYPE == "sample" & WELL_CONTENT_NAME != "empty"]
 
@@ -15,8 +16,8 @@
   return(masterp_norm)
 }
 
-#' @keywords internal
 #- normMethod is either "PLATE", or contron siRNA names. Former is prefered.
+#' @keywords internal
 .ff_masterPlateValue <- function(masterPlate, dta, treatment, control, normMethod = "PLATE") {
   masterp_dta <- .ff_norm(masterPlate, dta, normMethod)
 
@@ -32,7 +33,7 @@
       inset("WELL_CONTENT_NAME", value = NULL) %>%
       extract(, plate_paired)
 
-    master_norm <- list(normedV = masterp_dta_w, treat_plate_num = length(treat_p), cont_plate_num = length(cont_p))
+    master_norm <- list(normedV = masterp_dta_w, n_treat_plate = length(treat_p), n_cont_plate = length(cont_p))
   } else {
     stop("(EE) Empty control or treament plates in master plate:", masterPlate, "\n")
   }
