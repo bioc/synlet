@@ -5,7 +5,7 @@
 #' @import ggplot2
 #' @importFrom RankProd RP
 #' @param masterPlate the master plate to be analyzed
-#' @param dat synthetic lethal RNAi screen data
+#' @param dta synthetic lethal RNAi screen data
 #' @param treatment the treatment condition in EXPERIMENT_MODIFICATION
 #' @param control the control condition in EXPERIMENT_MODIFICATION
 #' @param normMethod normalization methods to be used. If "PLATE", the raw readouts are normalized by plate median, otherwise use provided control siRNA
@@ -27,21 +27,17 @@
 #' rankp.c <- data.frame(do.call(rbind,
 #'   lapply(names(rankp.res), function(x) rankp.res[[x]])))
 #' @export
-rankProdHits <- function(masterPlate, dat, treatment, control,
-  normMethod = "PLATE") {
-  # browser()
-  if(class(dat) != "data.frame") stop("incorrect input!")
-  master.norm <- .ff_masterPlateValue(masterPlate, dat, treatment, control,
-    normMethod = normMethod)
-  masterp.da <- master.norm[[1]]
-  treat.num <- master.norm[[2]]
-  cont.num <- master.norm[[3]]
+rankProdHits <- function(masterPlate, dta, treatment, control, normMethod = "PLATE") {
+  norm_res      <- .ff_masterPlateValue(masterPlate, dta, treatment, control, normMethod = normMethod)
+  masterp_dta   <- norm_res[[1]]
+  n_treat_plate <- norm_res[[2]]
+  n_cont_plate  <- norm_res[[3]]
 
-  siRNA.cl <- rep(c(0, 1), times = c(treat.num, cont.num))
-  siRNA.rp <- RankProd::RP(masterp.da, siRNA.cl, logged = FALSE)
-  masterp.rp <- data.frame(MASTER_PLATE = masterPlate,
-    pvalue_treat_lowerthan_cont = siRNA.rp$pval[, 1],
-    FDR_treat_lowerthan_cont = siRNA.rp$pfp[, 1],
-    treat_cont_log2FC = log2(siRNA.rp$AveFC[, 1]))
-  # masterp.rp
+  siRNA_cl   <- rep(c(0, 1), times = c(n_treat_plate, n_cont_plate))
+  siRNA_rp   <- RankProd::RP(masterp_dta, siRNA_cl, logged = FALSE)
+  masterp_rp <- data.frame(MASTER_PLATE                = masterPlate,
+                           pvalue_treat_lowerthan_cont = siRNA_rp$pval[, 1],
+                           FDR_treat_lowerthan_cont    = siRNA_rp$pfp[, 1],
+                           treat_cont_log2FC           = log2(siRNA_rp$AveFC[, 1]))
+  return(masterp_rp)
 }
