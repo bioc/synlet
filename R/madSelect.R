@@ -29,7 +29,6 @@ madSelect <- function(masterPlate, dat, k = 3, treatment, control, outFile = FAL
   norm_res      <- .ff_masterPlateValue(masterPlate, dat, treatment, control, normMethod = normMethod)
   masterp_dta   <- norm_res[[1]]
   n_treat_plate <- norm_res[[2]]
-  n_cont_plate  <- norm_res[[3]]
 
   #- All plate belongs to the same master plate are concatenate together.
   #- !! I would like drop append == TRUE as only one master plate exist
@@ -51,9 +50,9 @@ madSelect <- function(masterPlate, dat, k = 3, treatment, control, outFile = FAL
 #' @keywords internal
 .ff_ratio_madS <- function(x, y, z) {
   a           <- length(x)
-  tr_co_ratio <- median(x[1:y], na.rm = TRUE) / median(x[z:a], na.rm = TRUE)
   med_treat   <- median(x[1:y], na.rm = TRUE)
   med_cont    <- median(x[z:a], na.rm = TRUE)
+  tr_co_ratio <- med_treat / med_cont
 
   l <- c(tr_co_ratio, med_treat, med_cont)
   names(l) <- c("treat_cont_ratio", "treat_median", "control_median")
