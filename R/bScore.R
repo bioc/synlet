@@ -27,7 +27,6 @@ bScore <- function(masterPlate, dta, treatment, control, outFile = FALSE) {
 
   if (! identical(rownames(b_treat), rownames(b_cont))) {
     message("(!!) Differernt order between and treatment and control in master plate: ", masterPlate, "\n")
-    break()
   } else {
     b_cominbed <- cbind(b_treat, b_cont)
   }
