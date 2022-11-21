@@ -36,7 +36,6 @@ madSelect <- function(masterPlate, dat, k = 3, treatment, control, outFile = FAL
     write.table(masterp_dta, paste0(masterPlate, ".median.norm.txt"), quote = FALSE, sep = "\t")
   }
 
-  #- Get confused here.
   plate_ratio    <- t(apply(masterp_dta, 1, .ff_ratio_madS, n_treat_plate, n_treat_plate + 1))
   plate_r_med    <- median(plate_ratio[, 1])
   Hits           <- rep("No", nrow(plate_ratio))
