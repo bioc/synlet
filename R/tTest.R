@@ -1,16 +1,16 @@
-#' student's t-test basing on B-score
+#' student's t-test on B-score
 #'
 #' Select hits by student's t-test using B-score from treatment and control plates.
 #' @import magrittr
 #' @import ggplot2
 #' @param masterPlate the master plate to be analyzed
 #' @param bScore normalized bScore
-#' @param numTreat number of treatment plates
-#' @param numCont number of control plates
+#' @param n_treat number of treatment plates
+#' @param n_cont number of control plates
 #' @return A list containing student's t-test for each master plate
 #' \itemize{
 #'   \item pvalue: p-value of the t-test
-#'   \item Treat_Cont: difference in bscore: treatment - control 
+#'   \item Treat_Cont: difference in bscore: treatment - control
 #'   \item p_adj: BH adjusted p-value
 #' }
 #' @references
@@ -18,58 +18,57 @@
 #' @examples
 #' bscore.res <- sapply(as.character(unique(exampleDat$MASTER_PLATE)), bScore,
 #'   exampleDat, control = "control", treatment = "treatment", simplify = FALSE)
-#' bscore.ttest  <- sapply(names(bscore.res), tTest, bscore.res, numTreat = 3,
-#'   numCont = 3, simplify = FALSE, USE.NAMES = TRUE)
+#' bscore.ttest  <- sapply(names(bscore.res), tTest, bscore.res, n_treat = 3,
+#'   n_cont = 3, simplify = FALSE, USE.NAMES = TRUE)
 #' bscore.combined <- data.frame(do.call(rbind, lapply(names(bscore.ttest),
 #'   function(x) if (!is.null(bscore.ttest[[x]])) {data.frame(MASTER_PLATE = x,
 #'   siRNAs = rownames(bscore.ttest[[x]]), bscore.ttest[[x]])})))
 #' @export
-tTest <- function(masterPlate, bScore, numTreat, numCont) {
-  # browser()
-  message("Processing MASTER PLATE:", masterPlate,"\n")
-  tem.da <- bScore[[masterPlate]]
-  ## remove the "empty" wells.
-  tem.da <- tem.da[grep("empty", rownames(tem.da), invert = TRUE), ]
+# tTest <- function(masterPlate, bScore, n_treat, n_cont) {
 
-  ttest.res <- t(apply(tem.da, 1, .ff_ttest, numTreat, numCont))
-  ## NA rows are removed;
-  tem.na <- ttest.res[is.na(ttest.res[, 1]), ]
-  if (dim(tem.na)[1] != 0) {
-    message("--- siRNAs with NA value in the t-test in master plate",
-      masterPlate, "double check ---- ", "\n")
-    for (siRNA in rownames(tem.na)) {
+tTest <- function(mtx, bScore, n_treat, n_cont) {
+  message("(==) Processing MASTER PLATE: ", masterPlate, "\n")
+  mtx <- mtx[grep("empty", rownames(mtx), invert = TRUE), ]
+
+  res    <- t(apply(mtx, 1, .ff_ttest, n_treat, n_cont))
+  res_na <- res[is.na(res[, "pvalue"]), ]
+
+  if (nrow(res_na) != 0) {
+    message("(II) NA generated for following siRNAs in t-test in master plate: ", masterPlate, "\n")
+    for (siRNA in rownames(res_na)) {
       message(siRNA, "\n")
     }
   }
 
-  ttest.res <- ttest.res[!is.na(ttest.res[, 1]), ]
+  res <- res[!is.na(res[, "pvalue"]), ]
 
-  if(dim(ttest.res)[1] != 0) {
-    tem.1 <- p.adjust(ttest.res[, 1], "BH")
-    ttest.res <- cbind(ttest.res, p_adj = tem.1)
-    ttest.res
+  #- replace number with column names.
+  if (nrow(res) != 0) {
+    res <- cbind(res, p_adj = p.adjust(res[, "pvalue"], "BH"))
   } else {
-    message("--- Warning: No valid t-test in masterplate", masterPlate, "---\n")
-    }
+    message("(II) No valid t-test in masterplate", masterPlate, "\n")
+  }
+
+  return(res)
 }
 
 #' @keywords internal
-.ff_ttest <- function(x, numTreat, numCont) {
+.ff_ttest <- function(x, n_treat, n_cont) {
   # browser()
-  state <- factor(rep(c("treatment", "control"),
-    times = c(numTreat, numCont)),
-    levels = c("treatment", "control"))
-  x.da <- data.frame(value = as.numeric(x), state = state)
-  ttest.res <-try(t.test(value ~ state, data = x.da), silent = TRUE)
-  if (is(ttest.res,"try-error")) {
-    tem.p <- NA
-    tem.diff <- NA
+  cond <- factor(rep(c("treatment", "control"), times = c(n_treat, n_cont)), levels = c("treatment", "control"))
+  dta  <- data.frame(value = x, cond = cond)
+
+  res <- try(t.test(value ~ cond, data = dta), silent = TRUE)
+
+  if (is(res, "try-error")) {
+    p <- NA
+    v <- NA
   } else {
-    tem.p <- ttest.res$"p.value"
-    x.mean <- tapply(x.da$value, x.da$state, mean, na.rm = TRUE)
-    tem.diff <- x.mean[1] - x.mean[2]
+    p <- res$"p.value"
+    m <- tapply(dta$value, dta$cond, mean, na.rm = TRUE)
+    v <- m[1] - m[2]
   }
-  tem.1 <- c(tem.p, tem.diff)
-  names(tem.1) <- c("pvalue", "Treat_Cont")
-  tem.1
+
+  t_res <- c(p, v) %>% set_names(values = c("pvalue", "Treat_Cont"))
+  return(t_res)
 }
