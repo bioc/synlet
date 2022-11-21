@@ -38,10 +38,10 @@ rsaHits <- function(dta,
     normMethod = "PLATE",
     LB,
     UB,
-    revHits = FALSE,
+    revHits    = FALSE,
     Bonferroni = FALSE,
     outputFile = "RSAhits.csv",
-    scoreFile = "RSA_score.csv") {
+    scoreFile  = "RSA_score.csv") {
   tem.1 <- sapply(unique(as.character(dta$MASTER_PLATE)), .ff_rsaRatio, dta, treatment, control, normMethod = normMethod, simplify = FALSE)
   rsaScore <- data.frame(do.call(rbind, lapply(names(tem.1), function(x) tem.1[[x]])))
   write.table(rsaScore, scoreFile, sep = "\t", quote = FALSE, row.names = FALSE)
@@ -60,6 +60,7 @@ rsaHits <- function(dta,
 
 #' @keywords internal
 handleOneGroup <- function(i, dataset, optsb, t.rank = NULL) {
+  #- i is a vector with the position info in the sorted data.
   ## how many of them are up or low than cut-off.
   if (optsb$reverse) {
     i_max <- sum(dataset$Score[i] >= optsb$LB)
@@ -83,7 +84,10 @@ handleOneGroup <- function(i, dataset, optsb, t.rank = NULL) {
 
 #' @keywords internal
 OPIScore <- function(I_rank, N, i_min = 1, i_max = -1, bonferroni = FALSE) {
-n_drawn <- length(I_rank)  # number of black
+  #- Number of total siRNA for a gene.
+  #- I_rank has the rank info of the siRNA to a gene.
+  n_drawn <- length(I_rank)
+
   if (i_max == -1) {
     i_max <- n_drawn
   }
@@ -96,18 +100,23 @@ n_drawn <- length(I_rank)  # number of black
   cutoff    <- 0
 
   for (i in i_min:i_max) {
+    #- Dealing with tie?
     if (i < i_max && I_rank[i] == I_rank[i + 1]) {
       next
     }
+
+    #- i - 1, overlapping; I_rank[i], white ball; N - I_rank[i], black balls.
     logp <- phyper(i - 1, I_rank[i], N - I_rank[i], n_drawn, lower.tail = FALSE, log.p = TRUE)
-    logp <- max(logp/log(10), -100)
+    logp <- max(logp / log(10), -100)
+
     if (logp <= best_logp) {
       best_logp <- logp
       cutoff    <- i
     }
   }
+
   if (bonferroni) {
-    best_logp <- best_logp + log(i_max - i_min + 1)/log(10)
+    best_logp <- best_logp + log(i_max - i_min + 1) / log(10)
   }
 
   return (c(logp = best_logp, cutoff = cutoff))
@@ -122,6 +131,7 @@ OPI <- function(Groups, Scores, opts, Data = NULL) {
 
   ## get the ranks, "max" for the tie.
   t.rank <- rank(t$Score, ties.method = "max")
+  #- Same genes are extracted in tapply.
   t <- do.call("rbind", tapply(seq(nrow(t)), list(t$Gene_ID), handleOneGroup, dataset = t, opts, t.rank))
   t <- cbind(Data, t[order(t[, "rank"]), ])
 
