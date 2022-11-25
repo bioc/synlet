@@ -29,7 +29,10 @@ plateHeatmap <- function(dta, base_size = 12, heatmap_col = NULL) {
     facet_wrap(~ new_name) +
     theme(axis.text.x = element_text(size = base_size * 0.5),
           axis.text.y = element_text(size = base_size * 0.5),
-          plot.title  = element_text(size = base_size * 0.8)) +
+          plot.title  = element_text(size = base_size * 0.8),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.background = element_rect(colour = "black", size = 1)) +
     labs(x = "", y = "") +
     coord_equal() +
     #- Expand not working.
