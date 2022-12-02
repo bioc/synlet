@@ -1,7 +1,7 @@
 #' Synthetic lethal RNAi screen example data.
 #'
 #' A dataset containing synthetic lethal RNAi screen data to show how functions work.
-#' The variables are as follows:
+#' The variables are as follows (all are character except READOUT):
 #'
 #' \itemize{
 #'   \item PLATE. plate names.
@@ -16,14 +16,8 @@
 #'
 #' @docType data
 #' @keywords datasets
-#' @name exampleDat
-#' @usage data(exampleDat)
-#' @format A data frame with 4320 rows and 8 variables
-#' @return A data frame containing RANi screen data, the READOUT value has no real biological meaning. 
+#' @name example_dt
+#' @usage data(example_dt)
+#' @format A data.table with 4320 rows and 8 variables
+#' @return A data.table containing RANi screen data, the READOUT value has no real biological meaning.
 NULL
-
-
-
-
-
-
