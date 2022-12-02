@@ -31,7 +31,6 @@ madSelect <- function(masterPlate, dat, k = 3, treatment, control, outFile = FAL
   n_treat_plate <- norm_res[[2]]
 
   #- All plate belongs to the same master plate are concatenate together.
-  #- !! I would like drop append == TRUE as only one master plate exist
   if (outFile) {
     write.table(masterp_dta, paste0(masterPlate, ".median.norm.txt"), quote = FALSE, sep = "\t")
   }
@@ -43,7 +42,6 @@ madSelect <- function(masterPlate, dat, k = 3, treatment, control, outFile = FAL
   Hits[Hit_sele] <- "Yes"
 
   res <- data.frame(MASTER_PLATE = masterPlate, plate_ratio, Hits = Hits)
-  # masterp.da.ratio
 }
 
 #' @keywords internal
