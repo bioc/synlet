@@ -7,7 +7,7 @@
 #' @importFrom dplyr filter
 #' @importFrom reshape2 melt
 #' @param gene gene symbol, case sensitive
-#' @param dat synthetic lethal RNAi screen data
+#' @param dta synthetic lethal RNAi screen data
 #' @param controlsiRNA controlsiRNA could be a vector of several siRNA, including postive/negative control
 #' @param FILEPATH path to store the figure
 #' @param colour colour used in graphs
@@ -30,134 +30,145 @@
 #'   treatment = "treatment", control = "control",
 #'   normMethod = c("PLATE", "lipid only", "scrambled control si1"))
 #' @export
-siRNAPlot <- function(gene, dat, controlsiRNA, FILEPATH = ".",
-  colour = rainbow(10), zPrimeMed, zPrimeMean,
-  treatment, control, normMethod = c("PLATE"),
-  width = 15, height = 14) {
+#- Need to generate a plot.
+siRNAPlot <- function(gene,
+    dta,
+    controlsiRNA,
+    FILEPATH = ".",
+    colour   = rainbow(10),
+    zPrimeMed,
+    zPrimeMean,
+    treatment,
+    control,
+    normMethod = c("PLATE"),
+    width      = 15,
+    height     = 14) {
   ## controlsiRNA could be a vector of several siRNA, including postive/negative control;
   ## zPrimeMed, zPrime factor basing on median;
   ## zPrimeMean, zPrime factor basing on mean;
   ## normMethod could be a PLATE and negative controls;
   ## Z factor plots, raw data plots and control plots.
-  # browser()
-  if(class(dat) != "data.frame") stop("incorrect input!")
-  message("+++ Processing", gene, "+++\n")
-  tem.1 <- paste("^", gene, " ", sep = "")
-  if (length(grep(tem.1, dat$WELL_CONTENT_NAME)) == 0) {
-    message("---", gene, "not found!---\n")
+  message("(==) Processing: ", gene, "\n")
+
+  ex_match <- paste("^", gene, " ", sep = "")
+
+  if (length(grep(ex_match, dta$WELL_CONTENT_NAME)) == 0) {
+    message("(II) ", gene, " not found!\n")
   } else {
-    tem.match <- paste("^", gene, " ", sep = "")
-    tem.11 <- dat[grep(tem.match, dat$WELL_CONTENT_NAME), ][, c("PLATE", "MASTER_PLATE", "WELL_CONTENT_NAME", "EXPERIMENT_MODIFICATION", "READOUT")]
-    tem.11$PLATE <- factor(as.character(tem.11$PLATE))
+    dta_2 <- dta[grep(ex_match, WELL_CONTENT_NAME), c("PLATE", "MASTER_PLATE", "WELL_CONTENT_NAME", "EXPERIMENT_MODIFICATION", "READOUT")] %>%
+      .[, PLATE := factor(PLATE)]
 
-    ## raw siRNA barplots.
-    tem.rawBarp <- ggplot(tem.11, aes(x = WELL_CONTENT_NAME, y = READOUT, fill = PLATE)) +
+    #- Raw siRNA barplots.
+    p_raw_barpl <- ggplot(as.data.frame(dta_2), aes( WELL_CONTENT_NAME, READOUT, fill = PLATE)) +
       geom_bar(stat = "identity", position = "dodge") +
       facet_grid(~ EXPERIMENT_MODIFICATION) +
-      theme_bw() +
-      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+      theme_bw(14) +
+      theme(panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            panel.background = element_rect(colour = "black", size = 1),
+            axis.text.x      = element_text(angle = -90, hjust = 0),
+            legend.title     = element_blank()) +
       scale_fill_manual(values = colour) +
-      theme(axis.text.x = element_text(angle = -90, hjust = 0)) +
-      labs(x = "", y = "raw readouts\n", title = "Barplot of raw siRNA screen readouts") +
-      theme(legend.title=element_blank())
+      labs(x = "", y = "raw readouts", title = "Barplot of raw screen readouts")
 
-    ## siRNA control boxplots.
-    # browser()
-    masterP <- as.character(tem.11[1, "MASTER_PLATE"])
-    plates <- unique(as.character(tem.11$PLATE))
-    tem.21 <- dplyr::filter(dat, MASTER_PLATE == masterP)
-    tem.21 <- tem.21[tem.21$WELL_CONTENT_NAME %in% controlsiRNA, ]
-    tem.21$PLATE <- factor(as.character(tem.21$PLATE))
-    tem.contBoxp <- ggplot(tem.21, aes(WELL_CONTENT_NAME, READOUT, fill = PLATE)) +
+    dta_3 <- dta[MASTER_PLATE == unique(dta_2$MASTER_PLATE)] %>%
+      .[WELL_CONTENT_NAME %in% controlsiRNA] %>%
+      .[, PLATE := factor(PLATE)]
+
+    p_cont_boxplot <- ggplot(as.data.frame(dta_3), aes(WELL_CONTENT_NAME, READOUT, fill = PLATE)) +
       geom_boxplot() +
       facet_grid(~ EXPERIMENT_MODIFICATION) +
-      theme_bw() +
+      theme_bw(14) +
+      theme(panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            panel.background = element_rect(colour = "black", size = 1),
+            axis.text.x      = element_text(angle = -45, hjust = 0),
+            legend.title     = element_blank()) +
       scale_fill_manual(values = colour) +
-      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-      labs(x = "", y = "raw readouts\n", title = "Boxplot of raw control readouts") +
-      theme(axis.text.x = element_text(angle = -45, hjust = 0)) +
-      theme(legend.title=element_blank())
+      labs(x = "", y = "raw readouts", title = "Boxplot of raw control readouts")
 
-    ## Z' plots
-  # browser()
-    z.med <- zPrimeMed[plates, ]
-    z.me <- zPrimeMean[plates, ]
-    z.tot <- cbind(z.med[, 2], z.me[, 2])
-    rownames(z.tot) <- rownames(z.med)
-    colnames(z.tot) <- c("zPrimeF_median", "zPrimeF_mean")
-    tem.31 <- reshape2::melt(z.tot)
-    tem.31$Var1 <- factor(tem.31$Var1)
-    tem.zp <- ggplot(tem.31, aes(x = Var1, y = value, fill = Var1)) +
+    z_med  <- zPrimeMed[as.character(unique(dta_2$PLATE)), ]
+    z_mean <- zPrimeMean[as.character(unique(dta_2$PLATE)), ]
+    z_comb <- cbind(z_med[, 2], z_mean[, 2]) %>%
+      set_rownames(rownames(z_med)) %>%
+      set_colnames(c("zPrimeF_median", "zPrimeF_mean")) %>%
+      as.data.table(keep.rownames = TRUE) %>%
+      #- Set the var.
+      melt(measure.vars = c("zPrimeF_median", "zPrimeF_mean"))
+
+    #- Z primer plots.
+    p_zprimer_barpl <- ggplot(as.data.frame(z_comb), aes(rn, value, fill = rn)) +
       geom_bar(stat = "identity", position = "dodge") +
-      facet_grid(~ Var2) +
-      theme_bw() +
-      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+      facet_grid(~ variable) +
+      theme_bw(14) +
+      theme(panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            panel.background = element_rect(colour = "black", size = 1),
+            axis.text.x      = element_text(angle = -90, hjust = 0),
+            legend.title     = element_blank()) +
       scale_fill_manual(values = colour) +
-      labs(x = "", y = "Z' factor\n", title = "Barplot of Z' factor") +
-      theme(axis.text.x = element_text(angle = -90, hjust = 0)) +
-      theme(legend.position="none")
+      labs(x = "", y = "Z' factor", title = "Barplot of Z' factor")
 
-    master.norm <- sapply(normMethod, function(X) .ff_masterPlateValue(masterP,
-      dat, treatment, control, normMethod = X), simplify = FALSE)
-    treat.num <- master.norm[[1]]$treat.num
-    cont.num <- master.norm[[1]]$cont.num
-    master.norm.c <- do.call(rbind,lapply(names(master.norm),
-      function(X) data.frame(siRNA = rownames(master.norm[[X]][[1]]),
-        norMethod = X, master.norm[[X]][[1]], check.names = FALSE)))
-    tem.match <- paste("^", gene, " ", sep = "")
+    master_norm <- sapply(normMethod,
+                          function(X) .ff_masterPlateValue(unique(dta_2$MASTER_PLATE),
+                                                           dta,
+                                                           treatment,
+                                                           control,
+                                                           normMethod = X), simplify = FALSE)
+    n_treat_plate <- master_norm[[1]]$n_treat_plate
+    n_cont_plate  <- master_norm[[1]]$n_cont_plate
+    master_norm_c <- do.call(rbind,lapply(names(master_norm),
+                                          function(x) data.frame(siRNA       = rownames(master_norm[[x]][[1]]),
+                                                                 norMethod   = x,
+                                                                 master_norm[[x]][[1]],
+                                                                 check.names = FALSE)))
 
-    # browser()
-    siRNA.da <- master.norm.c[grep(tem.match, master.norm.c$siRNA), ]
-    siRNA.da <- droplevels(siRNA.da)
-  # siRNA.da <- data.frame(siRNA = rownames(siRNA.da), siRNA.da, check.names = FALSE)
-  # colnames(siRNA.da)[3:8] <- rep(c("treatment", "control"), each = 3)
-    colnames(siRNA.da)[3:8] <- paste(rep(c("treament", "control"),
-      times = c(treat.num, cont.num)),
-      colnames(siRNA.da)[3:8], sep = "___")
-    siRNA.da.m <- reshape2::melt(siRNA.da)
-    siRNA.da.m <- data.frame(siRNA.da.m,
-      experiments = sapply(as.character(siRNA.da.m$variable),
-      function(X) unlist(strsplit(X, "___"))[1]), plates = sapply(as.character(siRNA.da.m$variable), function(X) unlist(strsplit(X, "___"))[2]))
+    dta_4 <- master_norm_c[grep(ex_match, master_norm_c$siRNA), ] %>%
+      droplevels %>%
+      as.data.table %>%
+      setnames(2 + seq_len(n_treat_plate + n_cont_plate), paste(rep(c("treament", "control"), times = c(n_treat_plate, n_cont_plate)),
+                                                                names(.)[2 + seq_len(n_treat_plate + n_cont_plate)],
+                                                                sep = "__")) %>%
+      melt(measure.vars = names(.)[-c(1:2)]) %>%
+      .[, c("experiments", "plates") := tstrsplit(variable, split = "__")]
 
-    ## box plot
-    tem.boxp <- ggplot(siRNA.da.m, aes(siRNA, value, fill = experiments)) +
+    #- box plot
+    p_norm_boxpl <- ggplot(as.data.frame(dta_4), aes(siRNA, value, fill = experiments)) +
       geom_boxplot() +
       theme_bw() +
-      theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank()) +
+      theme(panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            axis.text.x      = element_text(angle = -45, hjust = 0),
+            legend.title     = element_blank(),
+            panel.background = element_rect(colour = "black", size = 1)) +
       geom_hline(yintercept = 1, linetype = "dashed") +
       facet_grid( ~ norMethod) +
       scale_fill_manual(values = colour) +
-      labs(x ='\nsiRNAs', y = 'Normalized Value\n') +
-      theme(axis.text.x = element_text(angle = -45, hjust = 0)) +
-      labs(title = "Boxplot of normalized value", x = "") +
-      theme(legend.title=element_blank())
+      labs(x ="", y = "Normalized Value", title = "Boxplot of normalized value")
 
-    ## bar plot
-    tem.barp <- ggplot(siRNA.da.m, aes(siRNA, value, fill = experiments)) +
+    #- bar plot
+    p_norm_barpl <- ggplot(as.data.frame(dta_4), aes(siRNA, value, fill = experiments)) +
       geom_bar(stat = "identity", position = "dodge") +
       theme_bw() +
-      theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank()) +
+      theme(panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            axis.text.x      = element_text(angle = -45, hjust = 0),
+            legend.title     = element_blank(),
+            panel.background = element_rect(colour = "black", size = 1)) +
       geom_hline(yintercept = 1, linetype = "dashed") +
       facet_grid(plates ~ norMethod) +
       scale_fill_manual(values = colour) +
-      labs(x ='\nsiRNAs', y = 'Normalized Value\n') +
-      theme(axis.text.x = element_text(angle = -45, hjust = 0)) +
-      labs(title = "Barplot of normalized value", x = "") +
-      theme(legend.title=element_blank())
+      labs(x ="", y = "Normalized Value", title = "Barplot of normalized value")
 
-    pdf(file = file.path(FILEPATH, paste(gene, "pdf", sep = ".")), width = width, height = height)
-    grid::pushViewport(grid::viewport(layout = grid::grid.layout(2, 6)))
-    grid::grid.text("title of this panel", vp = grid::viewport(layout.pos.row = 1, layout.pos.col = 1:2))
-    print(tem.boxp, vp = grid::viewport(layout.pos.row = 1, layout.pos.col = 1:3))
-    print(tem.barp, vp = grid::viewport(layout.pos.row = 1, layout.pos.col = 4:6))
-    print(tem.rawBarp, vp = grid::viewport(layout.pos.row = 2, layout.pos.col = 1:2))
-    print(tem.contBoxp, vp = grid::viewport(layout.pos.row = 2, layout.pos.col = 3:4))
-    print(tem.zp, vp = grid::viewport(layout.pos.row = 2, layout.pos.col = 5:6))
-    dev.off()
+    q01 <- (p_norm_boxpl | p_norm_barpl) / (p_raw_barpl | p_cont_boxplot | p_zprimer_barpl)
 
-    return(list(tem.boxp = tem.boxp, tem.barp = tem.barp,
-      tem.rawBarp = tem.rawBarp, tem.contBoxp = tem.contBoxp,
-      tem.zp = tem.zp))
+    ggsave(file = file.path(FILEPATH, paste(gene, "pdf", sep = ".")), q01, width = width, height = height)
+
+    return(list(p_norm_boxpl    = p_norm_boxpl,
+                p_norm_barpl    = p_norm_barpl,
+                p_raw_barpl     = p_raw_barpl,
+                p_cont_boxplot  = p_cont_boxplot,
+                p_zprimer_barpl = p_zprimer_barpl))
 
   }
 }
