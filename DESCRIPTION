@@ -2,8 +2,7 @@ Package: synlet
 Type: Package
 Title: Hits Selection for Synthetic Lethal RNAi Screen Data
 Version: 1.23.1
-Author: Chunxuan Shao <chunxuan@outlook.com>
-Maintainer: Chunxuan Shao <chunxuan@outlook.com>
+Authors@R: person(given = "Chunxuan", family = "Shao", role = c("aut", "cre"), email = "chunxuan@outlook.com")
 Description: Select hits from synthetic lethal RNAi screen data. For
         example, there are two identical celllines except one gene is
         knocked-down in one cellline. The interest is to find genes
@@ -14,16 +13,19 @@ Description: Select hits from synthetic lethal RNAi screen data. For
         on 384 wells plates, but may apply to other platforms with
         proper configuration.
 License: GPL-3
-LazyData: TRUE
 biocViews: ImmunoOncology, CellBasedAssays, QualityControl, Preprocessing,
         Visualization, FeatureExtraction
 Imports:
     data.table,
     ggplot2,
+    grDevices,
     magrittr,
+    methods,
     patchwork,
     RankProd,
-    RColorBrewer
+    RColorBrewer,
+    stats,
+    utils
 Suggests:
     knitr,
     testthat,
@@ -31,3 +33,4 @@ Suggests:
 VignetteBuilder: knitr
 NeedsCompilation: no
 RoxygenNote: 7.1.2
+Encoding: UTF-8
