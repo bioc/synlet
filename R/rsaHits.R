@@ -1,8 +1,7 @@
 #' Select hits by RSA
 #'
 #' Selected hits by redundant siRNA activity method. Here is a wrapper function of RSA 1.8 by Yingyao Zhou.
-#' @import magrittr
-#' @import ggplot2
+#'
 #' @param dta synthetic lethal RNAi screen data
 #' @param treatment the treatment condition in EXPERIMENT_MODIFICATION
 #' @param control the control condition in EXPERIMENT_MODIFICATION
@@ -28,9 +27,9 @@
 #' @references
 #' Koenig, R. et al. A probability-based approach for the analysis of large-scale RNAi screens. Nat Methods 4, 847-849 (2007).
 #' @examples
-#' rsaHits(exampleDat, treatment = "treatment", control = "control",
-#'   normMethod = "PLATE", LB = 0.2, UB = 0.8, revHits = FALSE,
-#'   Bonferroni = FALSE, outputFile = "RSAhits.csv")
+#' res <- rsaHits(example_dt, treatment = "treatment", control = "control",
+#'                normMethod = "PLATE", LB = 0.2, UB = 0.8, revHits = FALSE,
+#'                Bonferroni = FALSE, outputFile = "RSAhits.csv")
 #' @export
 rsaHits <- function(dta,
     treatment,

@@ -1,8 +1,7 @@
 #' student's t-test on B-score
 #'
 #' Select hits by student's t-test using B-score from treatment and control plates.
-#' @import magrittr
-#' @import ggplot2
+#'
 #' @param masterPlate the master plate to be analyzed
 #' @param bScore normalized bScore
 #' @param n_treat number of treatment plates
@@ -16,16 +15,14 @@
 #' @references
 #' Birmingham, A. et al. Statistical methods for analysis of high-throughput RNA interference screens. Nat Methods 6, 569-575 (2009).
 #' @examples
-#' bscore.res <- sapply(as.character(unique(exampleDat$MASTER_PLATE)), bScore,
+#' bscore_res <- sapply(unique(exampleDat$MASTER_PLATE), bScore,
 #'   exampleDat, control = "control", treatment = "treatment", simplify = FALSE)
-#' bscore.ttest  <- sapply(names(bscore.res), tTest, bscore.res, n_treat = 3,
+#' bscore_ttest  <- sapply(names(bscore_res), tTest, bscore_res, n_treat = 3,
 #'   n_cont = 3, simplify = FALSE, USE.NAMES = TRUE)
-#' bscore.combined <- data.frame(do.call(rbind, lapply(names(bscore.ttest),
+#' bscore_comb <- data.frame(do.call(rbind, lapply(names(bscore.ttest),
 #'   function(x) if (!is.null(bscore.ttest[[x]])) {data.frame(MASTER_PLATE = x,
 #'   siRNAs = rownames(bscore.ttest[[x]]), bscore.ttest[[x]])})))
 #' @export
-# tTest <- function(masterPlate, bScore, n_treat, n_cont) {
-
 tTest <- function(mtx, bScore, n_treat, n_cont) {
   message("(==) Processing MASTER PLATE: ", masterPlate, "\n")
   mtx <- mtx[grep("empty", rownames(mtx), invert = TRUE), ]

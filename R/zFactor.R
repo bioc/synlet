@@ -1,17 +1,13 @@
 #' Calcualte the Z and Z' factor
 #'
 #' calcualte the Z and Z' factor for each plate.
-#' @import magrittr
-#' @import ggplot2
-#' @importFrom dplyr filter
-#' @importFrom doBy summaryBy
-#' @importFrom reshape2 dcast
+#'
 #' @param dta synthetic lethal RNAi screen data.
 #' @param negativeCon the negative control used in the WELL_CONTENT_NAME.
 #' @param positiveCon the positive control used in the WELL_CONTENT_NAME.
 #' @param useMean use mean to calcualate z factor and z' factor by default; otherwise use median.
 #' @examples
-#' zFactor(exampleDat, negativeCon = "scrambled control si1", positiveCon = "PLK1 si1")
+#' zFactor(example_dt, negativeCon = "scrambled control si1", positiveCon = "PLK1 si1")
 #' @return  A data.frame contains z factor and z' factor
 #' @references
 #' Zhang J.H., Chung T.D. & Oldenburg K.R. A simple statistical parameter for use in evaluation and validation of high throughput screening assays. J. Biomol. Screen. B, 4 67-73 (1999).

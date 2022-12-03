@@ -13,8 +13,7 @@
 #' @references
 #' Brideau, C., Gunter, B., Pikounis, B. & Liaw, A. Improved statistical methods for hit selection in high-throughput screening. J. Biomol. Screen. 8, 634-647 (2003).
 #' @examples
-#' bscore_res <- sapply(unique(exampleDat$MASTER_PLATE), bScore,
-#'   exampleDat, treatment = "treatment", control = "control", simplify = FALSE)
+#' res <- sapply(unique(example_dt$MASTER_PLATE), bScore, example_dt, treatment = "treatment", control = "control", simplify = FALSE)
 #' @export
 bScore <- function(masterPlate, dta, treatment, control, outFile = FALSE) {
   contPlate  <- dta[MASTER_PLATE == masterPlate & EXPERIMENT_MODIFICATION == control, unique(PLATE)]

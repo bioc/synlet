@@ -1,6 +1,7 @@
 #' Select hits basing on median +- k*MAD
 #'
 #' Select hits basing on median +- k*MAD, by default k is three.
+#'
 #' @param masterPlate the master plate to analysis
 #' @param dat synthetic lethal RNAi screen data
 #' @param k cutoff for selecting hits, default is three
@@ -19,11 +20,13 @@
 #' @references
 #' Chung,N.etal. Median absolute deviation to improve hits election for genome-scale RNAi screens. J. Biomol. Screen. 13, 149-158 (2008).
 #' @examples
-#' madSelection <- sapply(as.character(unique(exampleDat$MASTER_PLATE)),
-#'   madSelect, exampleDat, control = "control",
-#'   treatment = "treatment", simplify = FALSE)
-#' madSelection.c <- do.call(rbind,
-#'   lapply(names(madSelection), function(x) madSelection[[x]]))
+#' res <- sapply((unique(example_dt$MASTER_PLATE)),
+#'               madSelect,
+#'               example_dt,
+#'               control   = "control",
+#'               treatment = "treatment",
+#'               simplify  = FALSE)
+#' res_comb <- do.call(rbind, lapply(names(res), function(x) res[[x]]))
 #' @export
 madSelect <- function(masterPlate, dat, k = 3, treatment, control, outFile = FALSE, normMethod = "PLATE") {
   norm_res      <- .ff_masterPlateValue(masterPlate, dat, treatment, control, normMethod = normMethod)

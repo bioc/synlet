@@ -1,9 +1,7 @@
 #' Select hits by the rank product method
 #'
 #' Select hits by rank product methods by comparing treatment and control.
-#' @import magrittr
-#' @import ggplot2
-#' @importFrom RankProd RP
+#'
 #' @param masterPlate the master plate to be analyzed
 #' @param dta synthetic lethal RNAi screen data
 #' @param treatment the treatment condition in EXPERIMENT_MODIFICATION
@@ -21,11 +19,13 @@
 #'
 #' Hong, F. et al. RankProd: a bioconductor package for detecting differentially expressed genes in meta-analysis. Bioinformatics 22, 2825-2827 (2006).
 #' @examples
-#' rankp.res <- sapply(as.character(unique(exampleDat$MASTER_PLATE)),
-#'   rankProdHits, exampleDat, control = "control", treatment = "treatment",
-#'   simplify = FALSE)
-#' rankp.c <- data.frame(do.call(rbind,
-#'   lapply(names(rankp.res), function(x) rankp.res[[x]])))
+#' res <- sapply(unique(exampleDat$MASTER_PLATE),
+#'               rankProdHits,
+#'               exampleDat,
+#'               control   = "control",
+#'               treatment = "treatment",
+#'               simplify  = FALSE)
+#' res_comb <- do.call(rbind, lapply(names(res), function(x) res[[x]])))
 #' @export
 rankProdHits <- function(masterPlate, dta, treatment, control, normMethod = "PLATE") {
   norm_res      <- .ff_masterPlateValue(masterPlate, dta, treatment, control, normMethod = normMethod)

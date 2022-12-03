@@ -1,11 +1,7 @@
 #' Plot siRNA data and quality metrics.
 #'
 #' Plot the normalized RNAi screen data, row data, control signals and Z' factor.
-#' @import magrittr
-#' @import ggplot2
-#' @import grid
-#' @importFrom dplyr filter
-#' @importFrom reshape2 melt
+#'
 #' @param gene gene symbol, case sensitive
 #' @param dta synthetic lethal RNAi screen data
 #' @param controlsiRNA controlsiRNA could be a vector of several siRNA, including postive/negative control
@@ -20,15 +16,13 @@
 #' @param height height of the plot
 #' @return Return the ggplot2 objects in a list, which could be plotted individually.
 #' @examples
-#' zF_mean <- zFactor(exampleDat, negativeCon = "scrambled control si1",
-#'   positiveCon = "PLK1 si1")
-#' zF_med <- zFactor(exampleDat, negativeCon = "scrambled control si1",
-#'   positiveCon = "PLK1 si1", useMean = FALSE)
-#' tem.1 <- siRNAPlot("AAK1", exampleDat,
-#'   controlsiRNA = c("lipid only", "scrambled control si1"),
-#'   FILEPATH = ".",  zPrimeMed = zF_med, zPrimeMean = zF_mean,
-#'   treatment = "treatment", control = "control",
-#'   normMethod = c("PLATE", "lipid only", "scrambled control si1"))
+#' zF_mean <- zFactor(example_dt, negativeCon = "scrambled control si1", positiveCon = "PLK1 si1")
+#' zF_med  <- zFactor(example_dt, negativeCon = "scrambled control si1", positiveCon = "PLK1 si1", useMean = FALSE)
+#' p01 <- siRNAPlot("AAK1", example_dt,
+#'                  controlsiRNA = c("lipid only", "scrambled control si1"),
+#'                  FILEPATH = ".",  zPrimeMed = zF_med, zPrimeMean = zF_mean,
+#'                  treatment = "treatment", control = "control",
+#'                  normMethod = c("PLATE", "lipid only", "scrambled control si1"))
 #' @export
 #- Need to generate a plot.
 siRNAPlot <- function(gene,

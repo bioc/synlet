@@ -3,8 +3,6 @@
 #' Produce a single plot for readous of each plate, with the option of highlighting
 #' specific signals, like positive/negative controls.
 #'
-#' @import magrittr
-#' @import ggplot2
 #' @param dta synthetic lethal RNAi screen data
 #' @param scatter_colour colour for different signals
 #' @param controlOnly whether or not to plot control wells only
