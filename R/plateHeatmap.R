@@ -11,6 +11,8 @@
 #' ggsave("platesHeatmap.pdf", plot = p01, width = 500, height = 500, limitsize = FALSE)
 #' @export
 plateHeatmap <- function(dta, base_size = 12, heatmap_col = NULL) {
+  COL_NAME <- new_name <- PLATE <- EXPERIMENT_MODIFICATION <- ROW_NAME <- value <- NULL
+
   dta_2 <- copy(dta) %>%
     .[, new_name := paste(PLATE, EXPERIMENT_MODIFICATION, sep = " ")] %>%
     melt(id.vars = c("ROW_NAME", "COL_NAME", "new_name"), measure.vars = "READOUT") %>%

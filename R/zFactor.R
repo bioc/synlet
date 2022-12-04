@@ -14,6 +14,8 @@
 #' Birmingham,A. et al. (2009) Statistical methods for analysis of high-throughput RNA interference screens. Nat Methods, 6, 569-575.
 #' @export
 zFactor <- function(dta, negativeCon, positiveCon, useMean = TRUE) {
+  well_type <- WELL_CONTENT_NAME <- EXPERIMENT_TYPE <- READOUT <- PLATE <- NULL
+
   dta_2 <- copy(dta) %>%
     .[, well_type := WELL_CONTENT_NAME] %>%
     .[EXPERIMENT_TYPE == "sample", well_type := "treat"] %>%

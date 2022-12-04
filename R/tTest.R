@@ -2,8 +2,7 @@
 #'
 #' Select hits by student's t-test using B-score from treatment and control plates.
 #'
-#' @param masterPlate the master plate to be analyzed
-#' @param bScore normalized bScore
+#' @param mtx b-score matrix.
 #' @param n_treat number of treatment plates
 #' @param n_cont number of control plates
 #' @return A list containing student's t-test for each master plate
@@ -23,15 +22,14 @@
 #'   function(x) if (!is.null(bscore.ttest[[x]])) {data.frame(MASTER_PLATE = x,
 #'   siRNAs = rownames(bscore.ttest[[x]]), bscore.ttest[[x]])})))
 #' @export
-tTest <- function(mtx, bScore, n_treat, n_cont) {
-  message("(==) Processing MASTER PLATE: ", masterPlate, "\n")
+tTest <- function(mtx, n_treat, n_cont) {
   mtx <- mtx[grep("empty", rownames(mtx), invert = TRUE), ]
 
   res    <- t(apply(mtx, 1, .ff_ttest, n_treat, n_cont))
   res_na <- res[is.na(res[, "pvalue"]), ]
 
   if (nrow(res_na) != 0) {
-    message("(II) NA generated for following siRNAs in t-test in master plate: ", masterPlate, "\n")
+    message("(II) NA generated for following siRNAs in t-test.")
     for (siRNA in rownames(res_na)) {
       message(siRNA, "\n")
     }
@@ -43,7 +41,7 @@ tTest <- function(mtx, bScore, n_treat, n_cont) {
   if (nrow(res) != 0) {
     res <- cbind(res, p_adj = p.adjust(res[, "pvalue"], "BH"))
   } else {
-    message("(II) No valid t-test in masterplate", masterPlate, "\n")
+    message("(II) No valid t-test.")
   }
 
   return(res)
@@ -66,6 +64,6 @@ tTest <- function(mtx, bScore, n_treat, n_cont) {
     v <- m[1] - m[2]
   }
 
-  t_res <- c(p, v) %>% set_names(values = c("pvalue", "Treat_Cont"))
+  t_res <- c(p, v) %>% set_names(c("pvalue", "Treat_Cont"))
   return(t_res)
 }

@@ -17,7 +17,8 @@
 #' @return Return the ggplot2 objects in a list, which could be plotted individually.
 #' @examples
 #' zF_mean <- zFactor(example_dt, negativeCon = "scrambled control si1", positiveCon = "PLK1 si1")
-#' zF_med  <- zFactor(example_dt, negativeCon = "scrambled control si1", positiveCon = "PLK1 si1", useMean = FALSE)
+#' zF_med  <- zFactor(example_dt, negativeCon = "scrambled control si1", positiveCon = "PLK1 si1",
+#'                    useMean = FALSE)
 #' p01 <- siRNAPlot("AAK1", example_dt,
 #'                  controlsiRNA = c("lipid only", "scrambled control si1"),
 #'                  FILEPATH = ".",  zPrimeMed = zF_med, zPrimeMean = zF_mean,
@@ -42,6 +43,8 @@ siRNAPlot <- function(gene,
   ## zPrimeMean, zPrime factor basing on mean;
   ## normMethod could be a PLATE and negative controls;
   ## Z factor plots, raw data plots and control plots.
+  WELL_CONTENT_NAME <- PLATE <- READOUT <- MASTER_PLATE <- rn <- value <- variable <- siRNA <- experiments <- NULL
+
   message("(==) Processing: ", gene, "\n")
 
   ex_match <- paste("^", gene, " ", sep = "")
@@ -156,7 +159,7 @@ siRNAPlot <- function(gene,
 
     q01 <- (p_norm_boxpl | p_norm_barpl) / (p_raw_barpl | p_cont_boxplot | p_zprimer_barpl)
 
-    ggsave(file = file.path(FILEPATH, paste(gene, "pdf", sep = ".")), q01, width = width, height = height)
+    ggsave(file.path(FILEPATH, paste(gene, "pdf", sep = ".")), q01, width = width, height = height)
 
     return(list(p_norm_boxpl    = p_norm_boxpl,
                 p_norm_barpl    = p_norm_barpl,

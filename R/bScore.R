@@ -13,9 +13,12 @@
 #' @references
 #' Brideau, C., Gunter, B., Pikounis, B. & Liaw, A. Improved statistical methods for hit selection in high-throughput screening. J. Biomol. Screen. 8, 634-647 (2003).
 #' @examples
-#' res <- sapply(unique(example_dt$MASTER_PLATE), bScore, example_dt, treatment = "treatment", control = "control", simplify = FALSE)
+#' res <- sapply(unique(example_dt$MASTER_PLATE), bScore, example_dt,
+#'               treatment = "treatment", control = "control", simplify = FALSE)
 #' @export
 bScore <- function(masterPlate, dta, treatment, control, outFile = FALSE) {
+  MASTER_PLATE <- EXPERIMENT_MODIFICATION <- PLATE <- NULL
+
   contPlate  <- dta[MASTER_PLATE == masterPlate & EXPERIMENT_MODIFICATION == control, unique(PLATE)]
   treatPlate <- dta[MASTER_PLATE == masterPlate & EXPERIMENT_MODIFICATION == treatment, unique(PLATE)]
 
@@ -39,9 +42,9 @@ bScore <- function(masterPlate, dta, treatment, control, outFile = FALSE) {
 
 #' @keywords internal
 .ff_bscorePlate <- function(plateName, dta) {
-  ## internal function to calculate the B score;
-  ## plateName, plate to be normalized;
-
+  #- internal function to calculate the B score;
+  #- plateName, plate to be normalized;
+  PLATE <- EXPERIMENT_TYPE <- NULL
   message("(II) Processing PLATE:", plateName, "\n")
   one_plate <- dta[PLATE == plateName & EXPERIMENT_TYPE == "sample"]
 
@@ -52,7 +55,7 @@ bScore <- function(masterPlate, dta, treatment, control, outFile = FALSE) {
     as.matrix %>%
     medpolish(na.rm = TRUE, maxiter = 100)
 
-  Bscore <- (norm_res$residuals / mad(norm_res$residuals, na.rm = TRUE)) %>% c
+  res <- (norm_res$residuals / mad(norm_res$residuals, na.rm = TRUE)) %>% c
 
   well_name <- dcast(one_plate, ROW_NAME ~ COL_NAME, value.var = "WELL_CONTENT_NAME") %>%
     as.data.frame %>%
@@ -62,11 +65,11 @@ bScore <- function(masterPlate, dta, treatment, control, outFile = FALSE) {
     c
 
   if (sum(is.na(well_name)) == 0) {
-    names(Bscore) <- well_name
+    names(res) <- well_name
   }
   else {
     message("(!!) Wrong well names in plate: ", plateName)
   }
 
-  return(Bscore)
+  return(res)
 }

@@ -25,7 +25,7 @@
 #'               control   = "control",
 #'               treatment = "treatment",
 #'               simplify  = FALSE)
-#' res_comb <- do.call(rbind, lapply(names(res), function(x) res[[x]])))
+#' res_comb <- do.call(rbind, lapply(names(res), function(x) res[[x]]))
 #' @export
 rankProdHits <- function(masterPlate, dta, treatment, control, normMethod = "PLATE") {
   norm_res      <- .ff_masterPlateValue(masterPlate, dta, treatment, control, normMethod = normMethod)
