@@ -9,12 +9,13 @@
 #' @param control_name names of control siRNAs.
 #' @return a ggplot object
 #' @examples
-#' scatterPlot(exampleDat, controlOnly = FALSE, colour = rainbow(10),
-#'   "PLK1 si1", "scrambled control si1", "lipid only")
+#' data(example_dt)
+#' scatterPlot(example_dt, controlOnly = FALSE,
+#'            control_name = c("PLK1 si1", "scrambled control si1", "lipid only"))
 #' @export
-# scatterPlot <- function(dta, colour = rainbow(10), controlOnly = FALSE, ...) {
 scatterPlot <- function(dta, scatter_colour = rainbow(10), controlOnly = FALSE, control_name = NULL) {
   new_cond <- WELL_CONTENT_NAME <- EXPERIMENT_MODIFICATION <- new_name <- PLATE <- READOUT <- NULL
+
   dta_2 <- copy(dta)
 
   if (controlOnly == FALSE) {

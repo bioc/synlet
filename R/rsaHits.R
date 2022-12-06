@@ -27,9 +27,10 @@
 #' @references
 #' Koenig, R. et al. A probability-based approach for the analysis of large-scale RNAi screens. Nat Methods 4, 847-849 (2007).
 #' @examples
-#' res <- rsaHits(example_dt, treatment = "treatment", control = "control",
-#'                normMethod = "PLATE", LB = 0.2, UB = 0.8, revHits = FALSE,
-#'                Bonferroni = FALSE, outputFile = "RSAhits.csv")
+#' data(example_dt)
+#' rsaHits(example_dt, treatment = "treatment", control = "control",
+#'         normMethod = "PLATE", LB = 0.2, UB = 0.8, revHits = FALSE,
+#'         Bonferroni = FALSE, outputFile = "RSAhits.csv")
 #' @export
 rsaHits <- function(dta,
     treatment,

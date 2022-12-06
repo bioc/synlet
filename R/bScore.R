@@ -13,6 +13,7 @@
 #' @references
 #' Brideau, C., Gunter, B., Pikounis, B. & Liaw, A. Improved statistical methods for hit selection in high-throughput screening. J. Biomol. Screen. 8, 634-647 (2003).
 #' @examples
+#' data(example_dt)
 #' res <- sapply(unique(example_dt$MASTER_PLATE), bScore, example_dt,
 #'               treatment = "treatment", control = "control", simplify = FALSE)
 #' @export
@@ -42,10 +43,12 @@ bScore <- function(masterPlate, dta, treatment, control, outFile = FALSE) {
 
 #' @keywords internal
 .ff_bscorePlate <- function(plateName, dta) {
-  #- internal function to calculate the B score;
+  #- Internal function to calculate the B score;
   #- plateName, plate to be normalized;
   PLATE <- EXPERIMENT_TYPE <- NULL
+
   message("(II) Processing PLATE:", plateName, "\n")
+
   one_plate <- dta[PLATE == plateName & EXPERIMENT_TYPE == "sample"]
 
   norm_res <- dcast(one_plate, ROW_NAME ~ COL_NAME, value.var = "READOUT") %>%

@@ -16,16 +16,15 @@
 #' }
 #' @references
 #' Breitling, R., Armengaud, P., Amtmann, A. & Herzyk, P. Rank products: a simple, yet powerful, new method to detect differentially regulated genes in replicated microarray experiments. FEBS Lett 573, 83-92 (2004).
-#'
 #' Hong, F. et al. RankProd: a bioconductor package for detecting differentially expressed genes in meta-analysis. Bioinformatics 22, 2825-2827 (2006).
 #' @examples
-#' res <- sapply(unique(exampleDat$MASTER_PLATE),
+#' data(example_dt)
+#' res <- sapply(unique(example_dt$MASTER_PLATE),
 #'               rankProdHits,
-#'               exampleDat,
+#'               example_dt,
 #'               control   = "control",
 #'               treatment = "treatment",
 #'               simplify  = FALSE)
-#' res_comb <- do.call(rbind, lapply(names(res), function(x) res[[x]]))
 #' @export
 rankProdHits <- function(masterPlate, dta, treatment, control, normMethod = "PLATE") {
   norm_res      <- .ff_masterPlateValue(masterPlate, dta, treatment, control, normMethod = normMethod)

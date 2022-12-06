@@ -14,13 +14,10 @@
 #' @references
 #' Birmingham, A. et al. Statistical methods for analysis of high-throughput RNA interference screens. Nat Methods 6, 569-575 (2009).
 #' @examples
-#' bscore_res <- sapply(unique(exampleDat$MASTER_PLATE), bScore,
-#'   exampleDat, control = "control", treatment = "treatment", simplify = FALSE)
-#' bscore_ttest  <- sapply(names(bscore_res), tTest, bscore_res, n_treat = 3,
-#'   n_cont = 3, simplify = FALSE, USE.NAMES = TRUE)
-#' bscore_comb <- data.frame(do.call(rbind, lapply(names(bscore.ttest),
-#'   function(x) if (!is.null(bscore.ttest[[x]])) {data.frame(MASTER_PLATE = x,
-#'   siRNAs = rownames(bscore.ttest[[x]]), bscore.ttest[[x]])})))
+#' data(example_dt)
+#' bscore_res <- sapply(unique(example_dt$MASTER_PLATE), bScore,
+#'   example_dt, control = "control", treatment = "treatment", simplify = FALSE)
+#' tTest(bscore_res$P001, 3, 3)
 #' @export
 tTest <- function(mtx, n_treat, n_cont) {
   mtx <- mtx[grep("empty", rownames(mtx), invert = TRUE), ]
