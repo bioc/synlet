@@ -2,6 +2,7 @@
 #' @keywords internal
 .ff_norm <- function(masterPlate, dta, norm_method = "PLATE") {
   WELL_CONTENT_NAME <- MASTER_PLATE <- EXPERIMENT_TYPE <- READOUT <- NORMEDV <- BACKGROUND_MED <- NULL
+
   masterp_dta <- dta[MASTER_PLATE == masterPlate & EXPERIMENT_TYPE == "sample" & WELL_CONTENT_NAME != "empty"]
 
   if (norm_method == "PLATE") {
@@ -21,6 +22,7 @@
 #' @keywords internal
 .ff_masterPlateValue <- function(masterPlate, dta, treatment, control, normMethod = "PLATE") {
   EXPERIMENT_MODIFICATION <- PLATE <- NULL
+
   masterp_dta <- .ff_norm(masterPlate, dta, normMethod)
 
   treat_p <- masterp_dta[EXPERIMENT_MODIFICATION == treatment, unique(PLATE)]
