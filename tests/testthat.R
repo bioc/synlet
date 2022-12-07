@@ -1,5 +1,5 @@
 library(testthat)
 library(synlet)
-data("exampleDat")
+data("example_dt")
 
 test_check("synlet")
