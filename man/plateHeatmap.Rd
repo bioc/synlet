@@ -20,6 +20,6 @@ a ggplot object
 Put all individual plates in one graph, values are the readout in experiments.
 }
 \examples{
-p01 <- plateHeatmap(example_dt)
-ggsave("platesHeatmap.pdf", plot = p01, width = 500, height = 500, limitsize = FALSE)
+data(example_dt)
+plateHeatmap(example_dt)
 }

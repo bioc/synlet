@@ -22,7 +22,8 @@ A data.frame contains z factor and z' factor
 calcualte the Z and Z' factor for each plate.
 }
 \examples{
-zFactor(example_dt, negativeCon = "scrambled control si1", positiveCon = "PLK1 si1")
+data(example_dt)
+res <- zFactor(example_dt, negativeCon = "scrambled control si1", positiveCon = "PLK1 si1")
 }
 \references{
 Zhang J.H., Chung T.D. & Oldenburg K.R. A simple statistical parameter for use in evaluation and validation of high throughput screening assays. J. Biomol. Screen. B, 4 67-73 (1999).

@@ -56,9 +56,10 @@ Note: a rank value of 999999 means the well is not a hit
 Selected hits by redundant siRNA activity method. Here is a wrapper function of RSA 1.8 by Yingyao Zhou.
 }
 \examples{
-res <- rsaHits(example_dt, treatment = "treatment", control = "control",
-               normMethod = "PLATE", LB = 0.2, UB = 0.8, revHits = FALSE,
-               Bonferroni = FALSE, outputFile = "RSAhits.csv")
+data(example_dt)
+rsaHits(example_dt, treatment = "treatment", control = "control",
+        normMethod = "PLATE", LB = 0.2, UB = 0.8, revHits = FALSE,
+        Bonferroni = FALSE, outputFile = "RSAhits.csv")
 }
 \references{
 Koenig, R. et al. A probability-based approach for the analysis of large-scale RNAi screens. Nat Methods 4, 847-849 (2007).

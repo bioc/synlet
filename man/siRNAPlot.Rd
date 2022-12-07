@@ -51,8 +51,10 @@ Return the ggplot2 objects in a list, which could be plotted individually.
 Plot the normalized RNAi screen data, row data, control signals and Z' factor.
 }
 \examples{
+data(example_dt)
 zF_mean <- zFactor(example_dt, negativeCon = "scrambled control si1", positiveCon = "PLK1 si1")
-zF_med  <- zFactor(example_dt, negativeCon = "scrambled control si1", positiveCon = "PLK1 si1", useMean = FALSE)
+zF_med  <- zFactor(example_dt, negativeCon = "scrambled control si1", positiveCon = "PLK1 si1",
+                   useMean = FALSE)
 p01 <- siRNAPlot("AAK1", example_dt,
                  controlsiRNA = c("lipid only", "scrambled control si1"),
                  FILEPATH = ".",  zPrimeMed = zF_med, zPrimeMean = zF_mean,

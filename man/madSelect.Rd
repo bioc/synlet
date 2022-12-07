@@ -43,13 +43,13 @@ A data.frame contains the hits selection results.
 Select hits basing on median +- k*MAD, by default k is three.
 }
 \examples{
+data(example_dt)
 res <- sapply((unique(example_dt$MASTER_PLATE)),
               madSelect,
               example_dt,
               control   = "control",
               treatment = "treatment",
               simplify  = FALSE)
-res_comb <- do.call(rbind, lapply(names(res), function(x) res[[x]]))
 }
 \references{
 Chung,N.etal. Median absolute deviation to improve hits election for genome-scale RNAi screens. J. Biomol. Screen. 13, 149-158 (2008).

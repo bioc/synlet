@@ -28,6 +28,7 @@ Produce a single plot for readous of each plate, with the option of highlighting
 specific signals, like positive/negative controls.
 }
 \examples{
-scatterPlot(exampleDat, controlOnly = FALSE, colour = rainbow(10),
-  "PLK1 si1", "scrambled control si1", "lipid only")
+data(example_dt)
+scatterPlot(example_dt, controlOnly = FALSE,
+           control_name = c("PLK1 si1", "scrambled control si1", "lipid only"))
 }

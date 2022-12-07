@@ -4,16 +4,14 @@
 \alias{tTest}
 \title{student's t-test on B-score}
 \usage{
-tTest(mtx, bScore, n_treat, n_cont)
+tTest(mtx, n_treat, n_cont)
 }
 \arguments{
-\item{bScore}{normalized bScore}
+\item{mtx}{b-score matrix.}
 
 \item{n_treat}{number of treatment plates}
 
 \item{n_cont}{number of control plates}
-
-\item{masterPlate}{the master plate to be analyzed}
 }
 \value{
 A list containing student's t-test for each master plate
@@ -27,13 +25,10 @@ A list containing student's t-test for each master plate
 Select hits by student's t-test using B-score from treatment and control plates.
 }
 \examples{
-bscore_res <- sapply(unique(exampleDat$MASTER_PLATE), bScore,
-  exampleDat, control = "control", treatment = "treatment", simplify = FALSE)
-bscore_ttest  <- sapply(names(bscore_res), tTest, bscore_res, n_treat = 3,
-  n_cont = 3, simplify = FALSE, USE.NAMES = TRUE)
-bscore_comb <- data.frame(do.call(rbind, lapply(names(bscore.ttest),
-  function(x) if (!is.null(bscore.ttest[[x]])) {data.frame(MASTER_PLATE = x,
-  siRNAs = rownames(bscore.ttest[[x]]), bscore.ttest[[x]])})))
+data(example_dt)
+bscore_res <- sapply(unique(example_dt$MASTER_PLATE), bScore,
+  example_dt, control = "control", treatment = "treatment", simplify = FALSE)
+tTest(bscore_res$P001, 3, 3)
 }
 \references{
 Birmingham, A. et al. Statistical methods for analysis of high-throughput RNA interference screens. Nat Methods 6, 569-575 (2009).

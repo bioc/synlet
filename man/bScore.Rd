@@ -26,7 +26,9 @@ Calculate the B-score for plates belonging to the same master plate.
 Positive / negative controls are removed from the calculation.
 }
 \examples{
-res <- sapply(unique(example_dt$MASTER_PLATE), bScore, example_dt, treatment = "treatment", control = "control", simplify = FALSE)
+data(example_dt)
+res <- sapply(unique(example_dt$MASTER_PLATE), bScore, example_dt,
+              treatment = "treatment", control = "control", simplify = FALSE)
 }
 \references{
 Brideau, C., Gunter, B., Pikounis, B. & Liaw, A. Improved statistical methods for hit selection in high-throughput screening. J. Biomol. Screen. 8, 634-647 (2003).
