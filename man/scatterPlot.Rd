@@ -29,6 +29,5 @@ specific signals, like positive/negative controls.
 }
 \examples{
 data(example_dt)
-scatterPlot(example_dt, controlOnly = FALSE,
-           control_name = c("PLK1 si1", "scrambled control si1", "lipid only"))
+scatterPlot(example_dt, control_name = c("PLK1 si1", "scrambled control si1", "lipid only"))
 }
