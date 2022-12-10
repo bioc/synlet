@@ -10,8 +10,7 @@
 #' @return a ggplot object
 #' @examples
 #' data(example_dt)
-#' scatterPlot(example_dt, controlOnly = FALSE,
-#'            control_name = c("PLK1 si1", "scrambled control si1", "lipid only"))
+#' scatterPlot(example_dt, control_name = c("PLK1 si1", "scrambled control si1", "lipid only"))
 #' @export
 scatterPlot <- function(dta, scatter_colour = rainbow(10), controlOnly = FALSE, control_name = NULL) {
   new_cond <- WELL_CONTENT_NAME <- EXPERIMENT_MODIFICATION <- new_name <- PLATE <- READOUT <- NULL
