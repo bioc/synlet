@@ -12,6 +12,7 @@
 #' @param treatment the treatment condition in EXPERIMENT_MODIFICATION
 #' @param control the control condition in EXPERIMENT_MODIFICATION
 #' @param normMethod could be a PLATE and negative controls
+#' @param save_plot whether save a png file in the working directory.
 #' @param width width of the plot
 #' @param height height of the plot
 #' @return Return the ggplot2 objects in a list, which could be plotted individually.
@@ -37,6 +38,7 @@ siRNAPlot <- function(gene,
     treatment,
     control,
     normMethod = c("PLATE"),
+    save_plot  = FALSE,
     width      = 15,
     height     = 14) {
   ## controlsiRNA could be a vector of several siRNA, including postive/negative control;
@@ -160,9 +162,10 @@ siRNAPlot <- function(gene,
 
     q01 <- (p_norm_boxpl | p_norm_barpl) / (p_raw_barpl | p_cont_boxplot | p_zprimer_barpl)
 
-    ggsave(file.path(FILEPATH, paste(gene, "pdf", sep = ".")), q01, width = width, height = height)
+    if (save_plot) ggsave(file.path(FILEPATH, paste(gene, "pdf", sep = ".")), q01, width = width, height = height)
 
-    return(list(p_norm_boxpl    = p_norm_boxpl,
+    return(list(full_plot       = q01,
+                p_norm_boxpl    = p_norm_boxpl,
                 p_norm_barpl    = p_norm_barpl,
                 p_raw_barpl     = p_raw_barpl,
                 p_cont_boxplot  = p_cont_boxplot,

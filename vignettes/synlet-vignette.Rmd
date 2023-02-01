@@ -14,6 +14,10 @@ vignette: >
 **Authors**: `r packageDescription("synlet")[["Author"]] `<br />
 **Compiled**: `r Sys.Date()`
 
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 12, fig.height = 10)
+```
+
 # Introduction
 Here is a step-by-step tutorial of the package **synlet**. This package processes data from cellBasedArrays.
 In this vignette, we will show a quick tour of using the synlet with dummy/stimulated
@@ -94,13 +98,12 @@ zF_med <- zFactor(example_dt, negativeCon = "scrambled control si1", positiveCon
 ```
 
 ```{r genePlot}
-p01 <- siRNAPlot("AAK1", example_dt,
-                  controlsiRNA = c("lipid only", "scrambled control si1"),
-                  FILEPATH = ".",  zPrimeMed = zF_med, zPrimeMean = zF_mean,
-                  treatment = "treatment", control = "control",
-                  normMethod = c("PLATE", "lipid only", "scrambled control si1"))
+siRNAPlot("AAK1", example_dt,
+           controlsiRNA = c("lipid only", "scrambled control si1"),
+           FILEPATH = ".",  zPrimeMed = zF_med, zPrimeMean = zF_mean,
+           treatment = "treatment", control = "control",
+           normMethod = c("PLATE", "lipid only", "scrambled control si1"))
 ```
-![AAK1](AAK1.png)
 
 # Hits selection
 The main goal of synthetic lethal RNAi screen experiments is to identify interesting genes led to reliable difference in mortality between treatment and control plates, which is a difficult task because of cell heterogeneity, reagent efficiency and intrinsic character of genes. *Synlet* tries to improve the results of hits selection by employing several algorithms that explore data from different directions, including student’s t-test, median ± k median absolute deviation, rank products and redundant siRNA activity (RSA).
