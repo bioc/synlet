@@ -15,6 +15,7 @@ siRNAPlot(
   treatment,
   control,
   normMethod = c("PLATE"),
+  save_plot = FALSE,
   width = 15,
   height = 14
 )
@@ -39,6 +40,8 @@ siRNAPlot(
 \item{control}{the control condition in EXPERIMENT_MODIFICATION}
 
 \item{normMethod}{could be a PLATE and negative controls}
+
+\item{save_plot}{whether save a png file in the working directory.}
 
 \item{width}{width of the plot}
 
