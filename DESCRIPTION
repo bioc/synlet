@@ -1,7 +1,7 @@
 Package: synlet
 Type: Package
 Title: Hits Selection for Synthetic Lethal RNAi Screen Data
-Version: 2.1.0
+Version: 2.2.0
 Authors@R: person(given = "Chunxuan", family = "Shao", role = c("aut", "cre"), email = "chunxuan@outlook.com")
 Description: Select hits from synthetic lethal RNAi screen data. For
         example, there are two identical celllines except one gene is
